@@ -1,0 +1,25 @@
+# /etc/systemd/system/duty-journal.service — ставится deploy/update.sh
+[Unit]
+Description=Журнал дежурной смены (gunicorn, 127.0.0.1:8080)
+After=network.target
+
+[Service]
+User=duty-journal
+Group=duty-journal
+WorkingDirectory=/opt/duty-journal
+EnvironmentFile=/etc/duty-journal/env
+Environment=PYTHONUNBUFFERED=1
+# --preload: create_app() (создание схемы и admin на пустой БД) выполняется один раз до форка воркеров
+ExecStart=/opt/duty-journal/.venv/bin/gunicorn --preload --workers 2 --bind 127.0.0.1:8080 \
+    --access-logfile - --error-logfile - --timeout 60 wsgi:app
+Restart=always
+RestartSec=5
+MemoryMax=250M
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/duty-journal
+
+[Install]
+WantedBy=multi-user.target

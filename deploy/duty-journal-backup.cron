@@ -1,0 +1,4 @@
+# /etc/cron.d/duty-journal-backup — ночной бэкап журнала (после бэкапа QuestHub в 03:30)
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+45 3 * * * root /usr/local/bin/duty-journal-backup.sh >> /var/log/duty-journal-backup.log 2>&1

@@ -7,7 +7,19 @@ from app import create_app
 from app.config import Settings
 
 
-FONT = Path(r"C:\Windows\Fonts\arial.ttf")
+# Шрифт с кириллицей для PDF: Arial на Windows, DejaVu/Liberation на Linux (CI, сервер)
+FONT = next(
+    (
+        p
+        for p in (
+            Path(r"C:\Windows\Fonts\arial.ttf"),
+            Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
+            Path("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"),
+        )
+        if p.is_file()
+    ),
+    Path(r"C:\Windows\Fonts\arial.ttf"),
+)
 
 
 @pytest.fixture()

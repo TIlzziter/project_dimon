@@ -1,0 +1,70 @@
+# Тесты и автодеплой на сервер при пуше в main. Репозиторий публичный: workflow НЕ запускается
+# на pull_request (в т.ч. из форков) — только push в main и ручной запуск владельцем.
+# Как устроено, откат, ручной выкат — deploy/README.md.
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: "Коммит из истории main (пусто — текущий выбранный ref). Для отката укажите старый sha."
+        required: false
+        default: ""
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"   # как на сервере (Ubuntu 24.04)
+      - name: Font for PDF (DejaVu)
+        run: |
+          [ -f /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf ] || { sudo apt-get update -q && sudo apt-get install -y -q fonts-dejavu-core; }
+      - name: Tests
+        run: |
+          pip install -r requirements.txt
+          python -m pytest -q
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.repository == 'TIlzziter/project_dimon'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Prepare SSH (pinned host key)
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+      - name: Deploy on server
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          INPUT_SHA: ${{ inputs.sha }}
+        run: |
+          SHA="${INPUT_SHA:-$GITHUB_SHA}"
+          [[ "$SHA" =~ ^[0-9a-f]{7,40}$ ]] || { echo "bad sha: $SHA"; exit 2; }
+          echo "Deploying $SHA"
+          # На сервере ключ привязан к forced command: sudo /usr/local/sbin/duty-journal-deploy "<sha>"
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes \
+              -o ServerAliveInterval=30 -o ConnectTimeout=20 "deploy@${DEPLOY_HOST}" "$SHA"
+      - name: Cleanup
+        if: always()
+        run: rm -f ~/.ssh/deploy_key

@@ -1,0 +1,2 @@
+# Только для сервера (поверх requirements.txt)
+gunicorn==26.2.0
