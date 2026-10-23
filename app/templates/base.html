@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Журнал смены{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <div class="phone">
+    {% if header is defined and header.show %}
+      <header class="top">
+        <div class="avatar" aria-hidden="true"></div>
+        <div>
+          <h1>Текущая смена</h1>
+          <p class="who">{{ header.duty_name }}</p>
+        </div>
+        <div>
+          <p class="when">{{ header.date }} <time>{{ header.time }}</time></p>
+          {% if header.action == "handover" %}
+            {% if header.enabled %}
+              <a class="action" href="{{ url_for('handover') }}">Сдать смену</a>
+            {% else %}
+              <button class="action" type="button" disabled>Сдать смену</button>
+            {% endif %}
+          {% elif header.action == "accept" %}
+            <a class="action" href="{{ url_for('accept') }}">Принять смену</a>
+          {% endif %}
+        </div>
+      </header>
+    {% endif %}
+    {% if viewer is defined %}
+      <nav class="tools">
+        <a href="{{ url_for('instruction') }}">Как пользоваться</a>
+        {% if viewer.is_admin %}
+          <a href="{{ url_for('admin') }}">Управление</a>
+        {% endif %}
+        <form method="post" action="{{ url_for('logout') }}">
+          <button type="submit">Выход</button>
+        </form>
+      </nav>
+    {% endif %}
+    {% with messages = get_flashed_messages() %}
+      {% for message in messages %}
+        <p class="flash">{{ message }}</p>
+      {% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

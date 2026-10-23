@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ order.number }}{% endblock %}
+{% block content %}
+  <section class="block">
+    <h2>{{ order.number }}</h2>
+    <div class="panel">
+      <p>{{ order.body }}</p>
+      <table>
+        <thead>
+          <tr><th>№</th><th>ФИО</th><th>Должность</th><th>Группа</th></tr>
+        </thead>
+        <tbody>
+          {% for person in people %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ person.full_name }}</td>
+              <td>{{ person.position }}</td>
+              <td>{{ person.group_name }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p><a href="{{ url_for('shift') }}">К ленте смены</a></p>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ event.number }}{% endblock %}
+{% block content %}
+  {% with event = {
+    "id": event.id,
+    "number": event.number,
+    "lines": lines,
+    "tone": tone,
+    "status": status,
+    "date": "",
+    "time": "",
+    "comments": comments,
+    "can_comment": can_comment,
+    "can_close": can_close,
+    "highlight": false
+  } %}
+    {% include "_event_card.html" %}
+  {% endwith %}
+  <p class="hint"><a href="{{ url_for('shift') }}">К ленте смены</a></p>
+{% endblock %}

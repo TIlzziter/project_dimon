@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Демо: журнал дежурной смены</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0e1c2b; color: #f4f7fb; font-family: "Segoe UI", Arial, sans-serif; }
+    .slide { display: none; min-height: 100vh; padding: 22px 36px 64px; }
+    .slide.active { display: block; }
+    h1 { margin: 0 0 12px; font-size: 34px; font-weight: 700; }
+    .row {
+      display: flex; gap: 36px; align-items: center; justify-content: center;
+      height: calc(100vh - 118px);
+    }
+    .frame { position: relative; align-self: center; flex: none; }
+    .frame img {
+      display: block;
+      max-height: calc(100vh - 140px);
+      max-width: min(760px, 58vw);
+      width: auto; height: auto;
+      border-radius: 18px;
+      box-shadow: 0 18px 50px rgba(0,0,0,.4);
+    }
+    .ring {
+      position: absolute; pointer-events: none; border-radius: 10px;
+      border: 3px solid #ff5a1f;
+      box-shadow: 0 0 0 3px #fff, 0 0 0 8px rgba(255,90,31,.5);
+    }
+    .ring { z-index: 1; }
+    .n {
+      position: absolute; z-index: 2; transform: translate(-16px, -16px);
+      background: #ff5a1f; color: #fff; width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; box-shadow: 0 0 0 3px #fff;
+    }
+    ol { list-style: none; margin: 0; padding: 0; width: 320px; flex: none; }
+    li { display: flex; gap: 12px; align-items: center; font-size: 26px; line-height: 1.25; margin: 0 0 18px; }
+    li b {
+      background: #ff5a1f; color: #fff; width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; flex: none; font-size: 18px;
+    }
+    .bar {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 24px; background: #0095da; color: #bff9fb;
+    }
+    button { font: inherit; font-size: 22px; background: transparent; color: inherit; border: 0; cursor: pointer; }
+    @page { size: 13.333in 7.5in; margin: 0; }
+    @media print {
+      .bar { display: none !important; }
+      .slide {
+        display: flex !important;
+        flex-direction: column;
+        width: 13.333in;
+        height: 7.5in;
+        min-height: 0;
+        padding: 0.32in 0.42in 0.28in;
+        break-after: page;
+        page-break-after: always;
+        overflow: hidden;
+        background: #0e1c2b;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .slide:last-of-type { break-after: auto; page-break-after: auto; }
+      h1 { font-size: 28px; margin-bottom: 8px; }
+      .row { height: auto; flex: 1; min-height: 0; gap: 28px; }
+      .frame img { max-height: 6.15in; max-width: 8.4in; }
+      ol { width: 3.3in; }
+      li { font-size: 20px; margin-bottom: 12px; }
+    }
+  </style>
+</head>
+<body>
+<section class="slide active">
+  <h1>Вход</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/01-login.png" alt="Вход">
+      <i class="ring" style="left:6.05%;top:17.25%;width:87.91%;height:6.90%"></i><b class="n" style="left:6.05%;top:17.25%">1</b><i class="ring" style="left:6.05%;top:29.64%;width:87.91%;height:6.90%"></i><b class="n" style="left:6.05%;top:29.64%">2</b><i class="ring" style="left:6.05%;top:38.67%;width:87.91%;height:7.97%"></i><b class="n" style="left:6.05%;top:38.67%">3</b>
+    </div>
+    <ol><li><b>1</b>логин</li><li><b>2</b>пароль</li><li><b>3</b>войти</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Кто заступает</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/02-assign.png" alt="Кто заступает">
+      <i class="ring" style="left:1.16%;top:28.39%;width:97.67%;height:6.77%"></i><b class="n" style="left:1.16%;top:28.39%">1</b><i class="ring" style="left:1.16%;top:35.16%;width:12.41%;height:7.43%"></i><b class="n" style="left:1.16%;top:35.16%">2</b>
+    </div>
+    <ol><li><b>1</b>следующий дежурный</li><li><b>2</b>назначить</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Справочник сервисов</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/03-services.png" alt="Справочник сервисов">
+      <i class="ring" style="left:1.16%;top:26.39%;width:97.67%;height:3.43%"></i><b class="n" style="left:1.16%;top:26.39%">1</b><i class="ring" style="left:1.16%;top:57.53%;width:97.67%;height:5.57%"></i><b class="n" style="left:1.16%;top:57.53%">2</b><i class="ring" style="left:1.16%;top:63.10%;width:9.57%;height:3.29%"></i><b class="n" style="left:1.16%;top:63.10%">3</b>
+    </div>
+    <ol><li><b>1</b>список сервисов</li><li><b>2</b>новое значение</li><li><b>3</b>добавить</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Сдать пока нельзя</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/04-shift.png" alt="Сдать пока нельзя">
+      <i class="ring" style="left:73.90%;top:6.52%;width:22.85%;height:6.94%"></i><b class="n" style="left:73.90%;top:6.52%">1</b><i class="ring" style="left:2.33%;top:22.07%;width:95.35%;height:7.99%"></i><b class="n" style="left:2.33%;top:22.07%">2</b>
+    </div>
+    <ol><li><b>1</b>сдать смену</li><li><b>2</b>сначала назвать следующего</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Действия смены</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/05-dock.png" alt="Действия смены">
+      <i class="ring" style="left:1.86%;top:38.90%;width:23.02%;height:6.46%"></i><b class="n" style="left:1.86%;top:38.90%">1</b><i class="ring" style="left:26.28%;top:38.90%;width:23.02%;height:6.46%"></i><b class="n" style="left:26.28%;top:38.90%">2</b><i class="ring" style="left:50.70%;top:38.90%;width:23.02%;height:6.46%"></i><b class="n" style="left:50.70%;top:38.90%">3</b><i class="ring" style="left:75.12%;top:38.90%;width:23.02%;height:6.46%"></i><b class="n" style="left:75.12%;top:38.90%">4</b>
+    </div>
+    <ol><li><b>1</b>событие</li><li><b>2</b>обход</li><li><b>3</b>отчёт</li><li><b>4</b>распоряжение</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Новое событие</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/06-event-fields.png" alt="Новое событие">
+      <i class="ring" style="left:4.19%;top:19.73%;width:91.63%;height:5.86%"></i><b class="n" style="left:4.19%;top:19.73%">1</b><i class="ring" style="left:4.19%;top:50.01%;width:91.63%;height:5.57%"></i><b class="n" style="left:4.19%;top:50.01%">2</b><i class="ring" style="left:4.19%;top:70.01%;width:91.63%;height:5.57%"></i><b class="n" style="left:4.19%;top:70.01%">3</b>
+    </div>
+    <ol><li><b>1</b>авария или плановые</li><li><b>2</b>участок</li><li><b>3</b>повреждение</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Сервисы и запись</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/07-event-save.png" alt="Сервисы и запись">
+      <i class="ring" style="left:4.19%;top:28.18%;width:32.05%;height:3.34%"></i><b class="n" style="left:4.19%;top:28.18%">1</b><i class="ring" style="left:4.19%;top:40.38%;width:31.57%;height:3.34%"></i><b class="n" style="left:4.19%;top:40.38%">2</b><i class="ring" style="left:4.19%;top:73.78%;width:44.88%;height:7.52%"></i><b class="n" style="left:4.19%;top:73.78%">3</b>
+    </div>
+    <ol><li><b>1</b>потерянные</li><li><b>2</b>на резерве</li><li><b>3</b>подтвердить</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Авария в ленте</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/08-accident.png" alt="Авария в ленте">
+      <i class="ring" style="left:4.65%;top:27.59%;width:17.21%;height:4.00%"></i><b class="n" style="left:4.65%;top:27.59%">1</b><i class="ring" style="left:77.43%;top:33.59%;width:17.92%;height:3.00%"></i><b class="n" style="left:77.43%;top:33.59%">2</b><i class="ring" style="left:23.72%;top:62.30%;width:51.85%;height:2.43%"></i><b class="n" style="left:23.72%;top:62.30%">3</b>
+    </div>
+    <ol><li><b>1</b>оранжевая метка</li><li><b>2</b>номер AC</li><li><b>3</b>открыто</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Чья смена</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/09-banner.png" alt="Чья смена">
+      <i class="ring" style="left:6.05%;top:1.77%;width:87.91%;height:6.19%"></i><b class="n" style="left:6.05%;top:1.77%">1</b><i class="ring" style="left:6.05%;top:38.96%;width:87.91%;height:6.89%"></i><b class="n" style="left:6.05%;top:38.96%">2</b><i class="ring" style="left:6.05%;top:60.35%;width:87.91%;height:7.95%"></i><b class="n" style="left:6.05%;top:60.35%">3</b>
+    </div>
+    <ol><li><b>1</b>кто сейчас дежурит</li><li><b>2</b>логин бригадира</li><li><b>3</b>войти</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Комментарий бригадира</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/10-comment.png" alt="Комментарий бригадира">
+      <i class="ring" style="left:4.65%;top:38.31%;width:90.70%;height:5.65%"></i><b class="n" style="left:4.65%;top:38.31%">1</b><i class="ring" style="left:4.65%;top:44.82%;width:90.70%;height:6.52%"></i><b class="n" style="left:4.65%;top:44.82%">2</b>
+    </div>
+    <ol><li><b>1</b>текст</li><li><b>2</b>добавить</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Статус сменился</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/11-commented.png" alt="Статус сменился">
+      <i class="ring" style="left:21.40%;top:40.55%;width:56.50%;height:2.43%"></i><b class="n" style="left:21.40%;top:40.55%">1</b><i class="ring" style="left:5.12%;top:44.12%;width:92.56%;height:2.71%"></i><b class="n" style="left:5.12%;top:44.12%">2</b>
+    </div>
+    <ol><li><b>1</b>прокомментировано</li><li><b>2</b>текст в карточке</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Обход</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/12-round.png" alt="Обход">
+      <i class="ring" style="left:4.19%;top:7.05%;width:91.63%;height:9.35%"></i><b class="n" style="left:4.19%;top:7.05%">1</b><i class="ring" style="left:80.93%;top:31.98%;width:14.88%;height:3.93%"></i><b class="n" style="left:80.93%;top:31.98%">2</b><i class="ring" style="left:4.19%;top:86.86%;width:44.88%;height:6.10%"></i><b class="n" style="left:4.19%;top:86.86%">3</b>
+    </div>
+    <ol><li><b>1</b>Заббикс без галочки</li><li><b>2</b>42 и выше — красным</li><li><b>3</b>завершить обход</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Замечание в ленте</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/13-round-feed.png" alt="Замечание в ленте">
+      <i class="ring" style="left:2.33%;top:47.66%;width:95.35%;height:21.58%"></i><b class="n" style="left:2.33%;top:47.66%">1</b>
+    </div>
+    <ol><li><b>1</b>обход с замечанием</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Распоряжение</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/14-order.png" alt="Распоряжение">
+      <i class="ring" style="left:4.19%;top:25.04%;width:91.63%;height:13.18%"></i><b class="n" style="left:4.19%;top:25.04%">1</b><i class="ring" style="left:36.38%;top:46.56%;width:30.28%;height:2.93%"></i><b class="n" style="left:36.38%;top:46.56%">2</b><i class="ring" style="left:4.19%;top:53.59%;width:28.91%;height:2.93%"></i><b class="n" style="left:4.19%;top:53.59%">3</b><i class="ring" style="left:4.19%;top:58.28%;width:44.88%;height:6.59%"></i><b class="n" style="left:4.19%;top:58.28%">4</b>
+    </div>
+    <ol><li><b>1</b>текст</li><li><b>2</b>человек в лист</li><li><b>3</b>группа «смена»</li><li><b>4</b>подтвердить</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Кнопки ждут распоряжение</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/15-locked.png" alt="Кнопки ждут распоряжение">
+      <i class="ring" style="left:74.48%;top:11.00%;width:15.32%;height:3.28%"></i><b class="n" style="left:74.48%;top:11.00%">1</b><i class="ring" style="left:0.00%;top:87.82%;width:100.00%;height:9.37%"></i><b class="n" style="left:0.00%;top:87.82%">2</b>
+    </div>
+    <ol><li><b>1</b>открыть номер</li><li><b>2</b>кнопки погасли</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Сдача смены</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/16-handover.png" alt="Сдача смены">
+      <i class="ring" style="left:4.19%;top:11.39%;width:14.63%;height:4.14%"></i><b class="n" style="left:4.19%;top:11.39%">1</b><i class="ring" style="left:4.19%;top:71.25%;width:91.63%;height:5.57%"></i><b class="n" style="left:4.19%;top:71.25%">2</b><i class="ring" style="left:0.00%;top:80.67%;width:49.07%;height:6.43%"></i><b class="n" style="left:0.00%;top:80.67%">3</b>
+    </div>
+    <ol><li><b>1</b>есть незакрытое</li><li><b>2</b>комментарий к СИЗ</li><li><b>3</b>сдать смену</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Ознакомление</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/17-popup.png" alt="Ознакомление">
+      <i class="ring" style="left:2.33%;top:17.29%;width:95.35%;height:42.53%"></i><b class="n" style="left:2.33%;top:17.29%">1</b><i class="ring" style="left:6.74%;top:49.38%;width:29.52%;height:7.34%"></i><b class="n" style="left:6.74%;top:49.38%">2</b>
+    </div>
+    <ol><li><b>1</b>текст распоряжения</li><li><b>2</b>подтвердить</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Что сдал предыдущий</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/18-accept-note.png" alt="Что сдал предыдущий">
+      <i class="ring" style="left:12.79%;top:83.48%;width:83.02%;height:2.71%"></i><b class="n" style="left:12.79%;top:83.48%">1</b><i class="ring" style="left:2.33%;top:12.05%;width:95.35%;height:5.00%"></i><b class="n" style="left:2.33%;top:12.05%">2</b>
+    </div>
+    <ol><li><b>1</b>комментарий сдачи</li><li><b>2</b>строка для группы «смена»</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Кнопка ещё оранжевая</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/19-accept-wait.png" alt="Кнопка ещё оранжевая">
+      <i class="ring" style="left:4.19%;top:13.56%;width:91.63%;height:10.09%"></i><b class="n" style="left:4.19%;top:13.56%">1</b><i class="ring" style="left:80.93%;top:53.93%;width:14.88%;height:4.24%"></i><b class="n" style="left:80.93%;top:53.93%">2</b><i class="ring" style="left:0.00%;top:79.96%;width:100.00%;height:6.58%"></i><b class="n" style="left:0.00%;top:79.96%">3</b>
+    </div>
+    <ol><li><b>1</b>галочки ещё пустые</li><li><b>2</b>42° с обхода</li><li><b>3</b>принять нельзя</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Можно принимать</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/20-accept-go.png" alt="Можно принимать">
+      <i class="ring" style="left:4.19%;top:13.56%;width:91.63%;height:10.09%"></i><b class="n" style="left:4.19%;top:13.56%">1</b><i class="ring" style="left:0.00%;top:79.96%;width:100.00%;height:6.58%"></i><b class="n" style="left:0.00%;top:79.96%">2</b>
+    </div>
+    <ol><li><b>1</b>все галочки стоят</li><li><b>2</b>кнопка зелёная</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Комментарий в сводке</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/21-summary-kit.png" alt="Комментарий в сводке">
+      <i class="ring" style="left:4.65%;top:41.93%;width:90.70%;height:3.00%"></i><b class="n" style="left:4.65%;top:41.93%">1</b>
+    </div>
+    <ol><li><b>1</b>СИЗ не сдан</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Файл сводки</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/22-summary-pdf.png" alt="Файл сводки">
+      <i class="ring" style="left:4.65%;top:60.68%;width:28.99%;height:14.59%"></i><b class="n" style="left:4.65%;top:60.68%">1</b><i class="ring" style="left:35.50%;top:60.68%;width:28.99%;height:14.59%"></i><b class="n" style="left:35.50%;top:60.68%">2</b>
+    </div>
+    <ol><li><b>1</b>сохранить PDF</li><li><b>2</b>печать</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Незакрытое у следующего</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/23-pin.png" alt="Незакрытое у следующего">
+      <i class="ring" style="left:2.33%;top:21.17%;width:95.35%;height:43.86%"></i><b class="n" style="left:2.33%;top:21.17%">1</b><i class="ring" style="left:23.72%;top:57.31%;width:51.85%;height:2.43%"></i><b class="n" style="left:23.72%;top:57.31%">2</b><i class="ring" style="left:74.48%;top:70.60%;width:15.32%;height:3.00%"></i><b class="n" style="left:74.48%;top:70.60%">3</b>
+    </div>
+    <ol><li><b>1</b>розовая карточка</li><li><b>2</b>ещё не закрыто</li><li><b>3</b>распоряжение снова держит кнопки</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Отчёт</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/24-report.png" alt="Отчёт">
+      <i class="ring" style="left:4.65%;top:7.17%;width:90.70%;height:2.89%"></i><b class="n" style="left:4.65%;top:7.17%">1</b><i class="ring" style="left:4.65%;top:83.74%;width:28.99%;height:9.09%"></i><b class="n" style="left:4.65%;top:83.74%">2</b><i class="ring" style="left:35.50%;top:83.74%;width:28.99%;height:9.09%"></i><b class="n" style="left:35.50%;top:83.74%">3</b>
+    </div>
+    <ol><li><b>1</b>номер отчёта</li><li><b>2</b>сохранить PDF</li><li><b>3</b>печать</li></ol>
+  </div>
+</section><section class="slide">
+  <h1>Событие закрыто</h1>
+  <div class="row">
+    <div class="frame">
+      <img src="slides/25-closed.png" alt="Событие закрыто">
+      <i class="ring" style="left:4.65%;top:27.59%;width:17.21%;height:4.00%"></i><b class="n" style="left:4.65%;top:27.59%">1</b><i class="ring" style="left:23.72%;top:62.30%;width:51.85%;height:2.43%"></i><b class="n" style="left:23.72%;top:62.30%">2</b>
+    </div>
+    <ol><li><b>1</b>зелёная метка</li><li><b>2</b>закрыто</li></ol>
+  </div>
+</section>
+<div class="bar"><button type="button" id="prev">←</button><span id="count"></span><button type="button" id="next">→</button></div>
+<script>
+  const slides = [...document.querySelectorAll(".slide")];
+  let index = 0;
+  const count = document.getElementById("count");
+  function show(next) {
+    index = (next + slides.length) % slides.length;
+    slides.forEach((slide, i) => slide.classList.toggle("active", i === index));
+    count.textContent = (index + 1) + " / " + slides.length;
+  }
+  document.getElementById("prev").onclick = () => show(index - 1);
+  document.getElementById("next").onclick = () => show(index + 1);
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
+      event.preventDefault();
+      show(index + 1);
+    }
+    if (event.key === "ArrowLeft" || event.key === "PageUp") show(index - 1);
+  });
+  const asked = Number(new URLSearchParams(location.search).get("slide"));
+  show(Number.isFinite(asked) && asked >= 1 ? asked - 1 : 0);
+</script>
+</body>
+</html>

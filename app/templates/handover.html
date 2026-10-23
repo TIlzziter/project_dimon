@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Сдача смены{% endblock %}
+{% block content %}
+  <section class="block">
+    <h2>Сдача смены</h2>
+    <div class="panel">
+      <p><span class="pill{% if red %} bad{% endif %}">Смена</span>
+        {% if red %}Есть незакрытое{% else %}Всё закрыто{% endif %}
+      </p>
+    </div>
+  </section>
+  <section class="block">
+    <h2>Не закрытые события</h2>
+    <div class="panel">
+      {% for row in rows %}
+        <div class="zebra">
+          <span><strong class="num">{{ row.number }}</strong> {{ row.text }}</span>
+          <span>{{ row.date }} {{ row.time }}</span>
+        </div>
+      {% else %}
+        <p>Незакрытого нет.</p>
+      {% endfor %}
+    </div>
+  </section>
+  <form method="post">
+    <section class="block">
+      <h2>Проверка комплектов</h2>
+      <div class="panel">
+        {% for kit in kits %}
+          <div class="check">
+            <input id="kit-{{ kit.id }}" type="checkbox" name="checked" value="{{ kit.id }}">
+            <label for="kit-{{ kit.id }}">{{ kit.name }}</label>
+            <input type="text" name="comment_{{ kit.id }}" placeholder="Комментарий, если пункт не сдан">
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% if not enabled %}
+      <p class="hint">Сдать смену пока нельзя: администратор ещё не назначил следующего дежурного.</p>
+    {% endif %}
+    <div class="buttons">
+      <button class="btn-go" type="submit" {% if not enabled %}disabled{% endif %}>Сдать смену</button>
+      <a class="btn-muted" href="{{ url_for('shift') }}">К ленте</a>
+    </div>
+  </form>
+{% endblock %}

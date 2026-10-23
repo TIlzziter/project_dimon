@@ -1,0 +1,18 @@
+{
+  "feature": "duty-journal",
+  "updated_at": "2026-10-23",
+  "status": "built",
+  "done": [
+    "Локальный сайт по spec.md: вход, смена, события, обход, распоряжения, сдача и приёмка, сводка, PDF, печать",
+    "Настройки HOST, PORT, DATA_DIR, SECRET_KEY, COOKIE_SECURE вынесены, чтобы тот же процесс поднять на виртуалке",
+    "Сценарий спеки покрыт tests/test_scenario.py, pytest -q зелёный",
+    "Инструкция: docs/features/duty-journal/instruction.html и /instruction",
+    "План демо: demo-plan.md. Презентация demo.html — скриншоты сайта с номерами, куда нажимать",
+    "Ролик docs/features/duty-journal/demo.mp4: те же 25 шагов, голос Irina, номера на живом сайте",
+    "PDF: docs/features/duty-journal/demo.pdf (25 слайдов) и instruction.pdf"
+  ],
+  "next_actions": [
+    "Провести демо по demo-plan.md",
+    "Перед бетой сменить пароль admin и задать HOST, DATA_DIR, SECRET_KEY на виртуалке"
+  ]
+}

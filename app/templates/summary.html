@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Сводка смены{% endblock %}
+{% block content %}
+  <article class="summary">
+    <h2>Сводка смены</h2>
+    <p>{{ document.duty_name }}</p>
+    <p class="when">{{ document.date }} <time>{{ document.time }}</time>
+      {% if document.end_date %} — сдана {{ document.end_date }} <time>{{ document.end_time }}</time>{% endif %}
+    </p>
+    <h3>Лента</h3>
+    {% for line in document.lines %}<p>{{ line }}</p>{% endfor %}
+    <h3>Незакрытое</h3>
+    {% for line in document.unclosed %}<p>{{ line }}</p>{% else %}<p>нет</p>{% endfor %}
+    <h3>Комплекты</h3>
+    {% for kit in document.kits %}
+      <p>{{ kit.name }}: {% if kit.checked %}отмечено{% else %}не отмечено{% endif %}{% if kit.comment %} — {{ kit.comment }}{% endif %}</p>
+    {% else %}
+      <p>На этой смене комплекты ещё не сдавались.</p>
+    {% endfor %}
+    <h3>Мониторинг</h3>
+    {% for row in document.monitoring %}
+      <p>{{ row.name }}: {% if row.checked %}норма{% else %}без отметки{% endif %}</p>
+    {% endfor %}
+    <h3>Температуры</h3>
+    {% for room in document.rooms %}
+      <p>{{ room.name }}: {% if room.value is none %}нет данных{% else %}{{ room.value|round(0, 'floor')|int }}°{% endif %}</p>
+    {% endfor %}
+    <div class="buttons noprint">
+      <a class="btn-go" href="{{ url_for('summary_pdf', shift_id=document.shift_id) }}">Сохранить PDF</a>
+      <button class="btn-muted" type="button" onclick="window.print()">Печать</button>
+      <a class="btn-muted" href="{{ url_for('shift') }}">К ленте</a>
+    </div>
+  </article>
+{% endblock %}

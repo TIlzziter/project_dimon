@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Текущая смена{% endblock %}
+{% block content %}
+  {% if not feed.header_enabled and feed.is_duty %}
+    <p class="hint">Сдать смену пока нельзя: администратор ещё не назначил следующего дежурного.</p>
+  {% endif %}
+  {% if feed.blocked %}
+    <p class="hint">Сначала откройте распоряжения. Пока они не открыты, нижние кнопки и правка событий недоступны.</p>
+  {% endif %}
+  <section class="block">
+    <article class="card tone-done">
+      <div class="card-head">
+        <span class="mark done">смена</span>
+        <p>Смену принял: {{ feed.duty_name }}</p>
+        <div>{{ feed.date }}<br>{{ feed.time }}</div>
+      </div>
+    </article>
+    {% for event in feed.pinned_events %}
+      {% include "_event_card.html" %}
+    {% endfor %}
+    {% for order in feed.pinned_orders %}
+      <article class="card tone-order{% if order.highlight %} pin{% endif %}">
+        <div class="card-head">
+          <span class="mark">распоряжение</span>
+          <p>{{ order.body }}</p>
+          <div>
+            {{ order.date }}<br>{{ order.time }}
+            <strong class="num"><a href="{{ url_for('order', order_id=order.id) }}">{{ order.number }}</a></strong>
+          </div>
+        </div>
+      </article>
+    {% endfor %}
+    {% for item in feed.entries %}
+      {% if item.event_id %}
+        {% with event = feed.events[item.event_id] %}
+          {% include "_event_card.html" %}
+        {% endwith %}
+      {% else %}
+        <article class="card tone-{{ item.tone }}">
+          <div class="card-head">
+            <span class="mark">{{ {"round": "обход", "order": "распоряжение", "report": "отчёт"}.get(item.kind, item.kind) }}</span>
+            <div>
+              <p>{{ item.title }}</p>
+              {% for line in item.lines %}<p>{{ line }}</p>{% endfor %}
+            </div>
+            <div>
+              {{ item.date }}<br>{{ item.time }}
+              {% if item.number %}
+                <strong class="num">
+                  {% if item.href %}<a href="{{ item.href }}">{{ item.number }}</a>{% else %}{{ item.number }}{% endif %}
+                </strong>
+              {% endif %}
+            </div>
+          </div>
+        </article>
+      {% endif %}
+    {% endfor %}
+  </section>
+  <nav class="dock">
+    {% if feed.can_act %}
+      <a class="dock-btn" href="{{ url_for('event_new') }}">Событие</a>
+      <a class="dock-btn" href="{{ url_for('round_new') }}">Обход</a>
+      <form method="post" action="{{ url_for('report_new') }}">
+        <button class="dock-btn" type="submit">Отчёт</button>
+      </form>
+      <a class="dock-btn" href="{{ url_for('order_new') }}">Распоряжение</a>
+    {% else %}
+      <span class="dock-btn disabled">Событие</span>
+      <span class="dock-btn disabled">Обход</span>
+      <span class="dock-btn disabled">Отчёт</span>
+      <span class="dock-btn disabled">Распоряжение</span>
+    {% endif %}
+  </nav>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Управление{% endblock %}
+{% block body_class %}wide{% endblock %}
+{% block content %}
+  <section class="admin-card">
+    <h2>Смена</h2>
+    <p>Сейчас смена: {{ shift_label }}{% if duty_name %}, дежурный {{ duty_name }}{% endif %}.</p>
+    <p>Следующий: {{ display_name(next_person) if next_person else "не назначен" }}.</p>
+    <form method="post" action="{{ url_for('admin_assign') }}">
+      <label for="user_id">Назначить дежурного следующей смены</label>
+      <select id="user_id" name="user_id" required>
+        {% for user in duty_options %}
+          <option value="{{ user.id }}" data-login="{{ user.login }}">{{ user.full_name or user.login }} ({{ user.login }})</option>
+        {% endfor %}
+      </select>
+      <button class="btn-go" type="submit">Назначить</button>
+    </form>
+  </section>
+
+  <section class="admin-card">
+    <h2>Новый пользователь</h2>
+    <form method="post" action="{{ url_for('admin_user_create') }}">
+      <label>Логин <input name="login" type="text" required></label>
+      <label>Пароль <input name="password" type="text" required></label>
+      <label>ФИО <input name="full_name" type="text"></label>
+      <label>Должность <input name="position" type="text"></label>
+      <div class="choices">
+        <label><input type="checkbox" name="can_duty" value="1"> может дежурить</label>
+        <label><input type="checkbox" name="is_brigadier" value="1"> бригадир</label>
+        <label><input type="checkbox" name="is_admin" value="1"> администратор</label>
+      </div>
+      <div class="choices">
+        {% for group in groups %}
+          <label><input type="checkbox" name="groups" value="{{ group.id }}" data-group="{{ group.name }}"> {{ group.name }}</label>
+        {% endfor %}
+      </div>
+      <button class="btn-go" type="submit">Добавить</button>
+    </form>
+  </section>
+
+  <section class="admin-card">
+    <h2>Пользователи</h2>
+    {% for item in users %}
+      <form method="post" action="{{ url_for('admin_user_update', user_id=item.row.id) }}">
+        <p><strong data-login="{{ item.row.login }}">{{ item.row.login }}</strong></p>
+        <label>ФИО <input name="full_name" type="text" value="{{ item.row.full_name }}"></label>
+        <label>Должность <input name="position" type="text" value="{{ item.row.position }}"></label>
+        <label>Новый пароль <input name="password" type="text" placeholder="пусто — не менять"></label>
+        <div class="choices">
+          <label><input type="checkbox" name="can_duty" value="1" {% if item.row.can_duty %}checked{% endif %}> может дежурить</label>
+          <label><input type="checkbox" name="is_brigadier" value="1" {% if item.row.is_brigadier %}checked{% endif %}> бригадир</label>
+          <label><input type="checkbox" name="is_admin" value="1" {% if item.row.is_admin %}checked{% endif %}> администратор</label>
+        </div>
+        <div class="choices">
+          {% for group in groups %}
+            <label><input type="checkbox" name="groups" value="{{ group.id }}" {% if group.id in item.groups %}checked{% endif %}> {{ group.name }}</label>
+          {% endfor %}
+        </div>
+        <button type="submit">Сохранить</button>
+      </form>
+    {% endfor %}
+  </section>
+
+  <section class="admin-card">
+    <h2>Группы</h2>
+    <ul>
+      {% for group in groups %}
+        <li>{{ group.name }}{% if group.is_shift_group %} — группа смены{% endif %}</li>
+      {% endfor %}
+    </ul>
+    <form method="post" action="{{ url_for('admin_group') }}">
+      <label>Новая группа <input name="name" type="text" required></label>
+      <button type="submit">Добавить группу</button>
+    </form>
+  </section>
+
+  {% set titles = {
+    "department": "Подразделения",
+    "section": "Участки",
+    "service": "Сервисы",
+    "room": "Аппаратные",
+    "monitoring": "Мониторинг",
+    "kit": "Комплекты"
+  } %}
+  {% for kind, rows in directories.items() %}
+    <section class="admin-card" id="dir-{{ kind }}">
+      <h2>{{ titles[kind] }}</h2>
+      {% for row in rows %}
+        <form method="post" action="{{ url_for('admin_directory_edit', item_id=row.id) }}">
+          <input name="name" type="text" value="{{ row.name }}" {% if not row.active %}disabled{% endif %}>
+          {% if row.active %}
+            <button type="submit">Переименовать</button>
+            <button type="submit" name="active" value="0">Убрать из новых форм</button>
+          {% else %}
+            <span>скрыто</span>
+          {% endif %}
+        </form>
+      {% endfor %}
+      <form method="post" action="{{ url_for('admin_directory_add') }}">
+        <input type="hidden" name="kind" value="{{ kind }}">
+        <input name="name" type="text" placeholder="Новое значение" required>
+        <button type="submit">Добавить</button>
+      </form>
+    </section>
+  {% endfor %}
+{% endblock %}

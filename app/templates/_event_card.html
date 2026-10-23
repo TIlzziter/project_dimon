@@ -1,0 +1,30 @@
+<article class="card tone-{{ event.tone }}{% if event.highlight %} pin{% endif %}" id="event-{{ event.id }}">
+  <div class="card-head">
+    <span class="mark">событие</span>
+    <div>
+      {% for line in event.lines %}
+        <p>{{ line }}</p>
+      {% endfor %}
+      <p class="status">{{ event.status }}</p>
+    </div>
+    <div>
+      <div>{{ event.date }}</div>
+      <div>{{ event.time }}</div>
+      <strong class="num">№{{ event.number }}</strong>
+    </div>
+  </div>
+  {% for comment in event.comments %}
+    <p class="comment">{{ comment.date }} {{ comment.time }} · {{ comment.author }}: {{ comment.body }}</p>
+  {% endfor %}
+  {% if event.can_comment %}
+    <form method="post" action="{{ url_for('event_comment', event_id=event.id) }}">
+      <input type="text" name="body" placeholder="Комментарий" required>
+      <button class="btn-go" type="submit">Добавить комментарий</button>
+    </form>
+  {% endif %}
+  {% if event.can_close %}
+    <form method="post" action="{{ url_for('event_close', event_id=event.id) }}">
+      <button class="btn-close" type="submit">Завершить событие</button>
+    </form>
+  {% endif %}
+</article>

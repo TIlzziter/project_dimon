@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Вход{% endblock %}
+{% block content %}
+  <section class="login-card">
+    {% if banner %}
+      <div class="banner">Текущая смена</div>
+      <div class="panel">
+        <p>{{ banner.duty_name }}</p>
+        <p class="when">{{ banner.date }} <time>{{ banner.time }}</time></p>
+        {% if banner.waiting %}<p>Смена сдана и ждёт приёмки.</p>{% endif %}
+      </div>
+    {% endif %}
+    <h1>Вход</h1>
+    <form method="post">
+      <label for="login">Пользователь</label>
+      <input id="login" name="login" type="text" autocomplete="username" required>
+      <label for="password">Введите пароль</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <div class="buttons">
+        <button class="btn-go" type="submit">Войти</button>
+      </div>
+    </form>
+    <p><a href="{{ url_for('instruction') }}">Как пользоваться</a></p>
+  </section>
+{% endblock %}

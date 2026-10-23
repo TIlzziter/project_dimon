@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Ознакомление{% endblock %}
+{% block content %}
+  <section class="popup">
+    <h2>Ознакомьтесь с распоряжением</h2>
+    <p><strong>{{ order.number }}</strong></p>
+    <p>{{ order.body }}</p>
+    <form method="post">
+      <button class="btn-go" type="submit">Подтвердить</button>
+    </form>
+  </section>
+{% endblock %}

@@ -1,0 +1,13 @@
+{
+  "feature": "initial_intent",
+  "updated_at": "2026-10-23",
+  "status": "analysis",
+  "done": [
+    "Разобраны ТЗ и my_notes.md",
+    "Граница первой версии пересмотрена: опора на ТЗ, заметки которые сужают функционал не переносятся",
+    "Спека записана в docs/features/duty-journal/spec.md"
+  ],
+  "next_actions": [
+    "Дальше работать по docs/features/duty-journal/"
+  ]
+}

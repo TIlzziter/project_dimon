@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Нет смены{% endblock %}
+{% block content %}
+  <section class="block">
+    <h2>Смена</h2>
+    <div class="panel">
+      {% if waiting %}
+        <p>Вы сдали смену. Принять её может {{ waiting }}.</p>
+      {% else %}
+        <p>Сейчас вам не назначена смена.</p>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}

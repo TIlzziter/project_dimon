@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Событие{% endblock %}
+{% block content %}
+  <section class="block">
+    <h2>Создать событие</h2>
+    <form class="panel" method="post">
+      {% if link_key %}
+        <p>Строка: {{ link_key }}</p>
+        <input type="hidden" name="link_kind" value="{{ link_kind }}">
+        <input type="hidden" name="link_key" value="{{ link_key }}">
+      {% endif %}
+      <label for="type">Тип события</label>
+      <select id="type" name="type" required>
+        <option value="ac">Аварийное сообщение</option>
+        <option value="pr">Плановые работы</option>
+      </select>
+      <label for="department">Подразделение</label>
+      <input id="department" name="department" type="text" list="departments">
+      <datalist id="departments">
+        {% for row in departments %}<option value="{{ row.name }}">{% endfor %}
+      </datalist>
+      <label for="line">Линия связи, оборудование</label>
+      <input id="line" name="line" type="text">
+      <label for="section_from">Участок, от</label>
+      <input id="section_from" name="section_from" type="text" list="sections">
+      <label for="section_to">Участок, до</label>
+      <input id="section_to" name="section_to" type="text" list="sections">
+      <datalist id="sections">
+        {% for row in sections %}<option value="{{ row.name }}">{% endfor %}
+      </datalist>
+      <label for="damage">Предположительное повреждение</label>
+      <input id="damage" name="damage" type="text">
+      <p>Потерянные сервисы</p>
+      <div class="choices">
+        {% for row in services %}
+          <label><input type="checkbox" name="lost" value="{{ row.name }}"> {{ row.name }}</label>
+        {% endfor %}
+      </div>
+      <p>Из них на резерве</p>
+      <div class="choices">
+        {% for row in services %}
+          <label><input type="checkbox" name="reserve" value="{{ row.name }}"> {{ row.name }}</label>
+        {% endfor %}
+      </div>
+      <label for="reporter_name">ФИО доложившего</label>
+      <input id="reporter_name" name="reporter_name" type="text">
+      <label for="reporter_phone">Телефон доложившего</label>
+      <input id="reporter_phone" name="reporter_phone" type="text">
+      <div class="buttons">
+        <button class="btn-go" type="submit">Подтвердить</button>
+        <a class="btn-muted" href="{{ url_for('shift') }}">Отмена</a>
+      </div>
+    </form>
+  </section>
+{% endblock %}

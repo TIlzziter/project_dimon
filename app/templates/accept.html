@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Приёмка смены{% endblock %}
+{% block content %}
+  <section class="block">
+    <h2>Приемка дежурной смены</h2>
+    <div class="panel">
+      <p>Смену сдал: {{ duty_name }}</p>
+      <p class="when">{{ date }} <time>{{ time }}</time></p>
+      <p><span class="pill{% if red %} bad{% endif %}">Смена</span>
+        {% if red %}Есть незакрытое{% else %}Всё закрыто{% endif %}
+      </p>
+      {% if not assignee %}
+        <p>Принять смену может только {{ assignee_name }}.</p>
+      {% endif %}
+    </div>
+  </section>
+  {% if notices %}
+    <section class="block">
+      <h2>Группе «смена» нужно ознакомиться</h2>
+      <div class="panel">
+        {% for order in notices %}
+          <p><strong>{{ order.number }}</strong> {{ order.body }}</p>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+  <section class="block">
+    <h2>Не закрытые события</h2>
+    <div class="panel">
+      {% for row in rows %}
+        <div class="zebra">
+          <span><strong class="num">{{ row.number }}</strong> {{ row.text }}</span>
+          <span>{{ row.date }} {{ row.time }}</span>
+        </div>
+      {% else %}
+        <p>Незакрытого нет.</p>
+      {% endfor %}
+    </div>
+  </section>
+  <form id="accept-form" method="post">
+    <section class="block">
+      <h2>Проверка комплектов</h2>
+      <div class="panel">
+        {% for kit in kits %}
+          {% set prev = previous.get(kit.id) %}
+          <div class="check">
+            <input id="kit-{{ kit.id }}" type="checkbox" name="checked" value="{{ kit.id }}">
+            <label for="kit-{{ kit.id }}">{{ kit.name }}</label>
+            {% if prev %}
+              <p class="note">
+                Сдано: {% if prev.checked %}отмечено{% else %}не отмечено{% endif %}
+                {% if prev.comment %}— {{ prev.comment }}{% endif %}
+              </p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+    <section class="block">
+      <h2>Проверка системы мониторинга</h2>
+      <div class="panel">
+        {% for row in monitors %}
+          <div class="check">
+            <input id="mon-{{ row.id }}" type="checkbox" name="checked" value="{{ row.id }}">
+            <label for="mon-{{ row.id }}">{{ row.name }}</label>
+            <span>
+              {% if linked.get(row.id) %}
+                <a href="{{ url_for('event', event_id=linked[row.id]) }}">Комментарий</a>
+              {% endif %}
+              {% if assignee %}
+                <a href="{{ url_for('event_new', link_kind='monitoring', link_key=row.name) }}">Событие</a>
+              {% endif %}
+            </span>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+    <section class="block">
+      <h2>Контроль температуры помещений</h2>
+      <div class="panel">
+        {% for room in rooms %}
+          <div class="temp">
+            <span>{{ room.name }}</span>
+            {% if room.value is none %}
+              <b class="empty">—</b>
+            {% elif room.hot %}
+              <b class="hot">{{ room.value|round(0, 'floor')|int }}°</b>
+            {% else %}
+              <b class="ok">{{ room.value|round(0, 'floor')|int }}°</b>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+    <div class="buttons">
+      <button id="accept-btn" class="btn-wait" type="submit" data-assignee="{{ 1 if assignee else 0 }}" {% if not assignee %}disabled{% endif %}>Принять смену</button>
+    </div>
+  </form>
+  <script>
+    const form = document.getElementById("accept-form");
+    const btn = document.getElementById("accept-btn");
+    function syncAccept() {
+      const boxes = [...form.querySelectorAll('input[name="checked"]')];
+      const ready = boxes.length > 0 && boxes.every((box) => box.checked);
+      const allowed = btn.dataset.assignee === "1";
+      btn.disabled = !(ready && allowed);
+      btn.className = ready && allowed ? "btn-go" : "btn-wait";
+    }
+    form.addEventListener("change", syncAccept);
+    syncAccept();
+  </script>
+{% endblock %}

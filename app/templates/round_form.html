@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Обход{% endblock %}
+{% block content %}
+  <section class="block">
+    <h2>Проведение обхода</h2>
+    <form class="panel" method="post">
+      <h2>Проверка системы мониторинга</h2>
+      {% for row in monitors %}
+        <div class="check">
+          <input id="mon-{{ row.id }}" type="checkbox" name="checked" value="{{ row.id }}">
+          <label for="mon-{{ row.id }}">{{ row.name }}</label>
+          <span>
+            {% if linked.get(row.id) %}
+              <a href="{{ url_for('event', event_id=linked[row.id]) }}">Комментарий</a>
+            {% endif %}
+            <a href="{{ url_for('event_new', link_kind='monitoring', link_key=row.name) }}">Событие</a>
+          </span>
+        </div>
+      {% endfor %}
+      <h2>Контроль температуры помещений</h2>
+      {% for row in rooms %}
+        <div class="temp">
+          <span>{{ row.name }}</span>
+          <input id="temp-{{ row.id }}" class="temp-input" data-badge="badge-{{ row.id }}" name="temp_{{ row.id }}" type="text" inputmode="decimal" placeholder="°C">
+          <b class="empty" id="badge-{{ row.id }}">—</b>
+        </div>
+        <p>
+          {% if linked.get(row.id) %}
+            <a href="{{ url_for('event', event_id=linked[row.id]) }}">Комментарий</a>
+          {% endif %}
+          <a href="{{ url_for('event_new', link_kind='room', link_key=row.name) }}">Событие</a>
+        </p>
+      {% endfor %}
+      <div class="buttons">
+        <button class="btn-go" type="submit">Завершить обход</button>
+        <a class="btn-muted" href="{{ url_for('shift') }}">Отмена</a>
+      </div>
+    </form>
+  </section>
+  <script>
+    document.querySelectorAll(".temp-input").forEach((input) => {
+      const badge = document.getElementById(input.dataset.badge);
+      input.addEventListener("input", () => {
+        const raw = input.value.replace(",", ".").trim();
+        const value = Number(raw);
+        if (raw === "" || Number.isNaN(value)) {
+          badge.textContent = "—";
+          badge.className = "empty";
+          return;
+        }
+        badge.textContent = Math.floor(value) + "°";
+        badge.className = value >= 42 ? "hot" : "ok";
+      });
+    });
+  </script>
+{% endblock %}

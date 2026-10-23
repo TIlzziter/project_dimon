@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Распоряжение{% endblock %}
+{% block content %}
+  <section class="block">
+    <h2>Распоряжение</h2>
+    <form class="panel" method="post">
+      <label for="body">Текст распоряжения</label>
+      <textarea id="body" name="body" required></textarea>
+      <p>Лист ознакомления. Отметьте людей и группы.</p>
+      <div class="choices">
+        {% for user in users %}
+          <label><input type="checkbox" name="user_id" value="{{ user.id }}"> {{ user.full_name or user.login }}</label>
+        {% endfor %}
+      </div>
+      <div class="choices">
+        {% for group in groups %}
+          <label><input type="checkbox" name="group_id" value="{{ group.id }}"> группа «{{ group.name }}»</label>
+        {% endfor %}
+      </div>
+      <div class="buttons">
+        <button class="btn-go" type="submit">Подтвердить</button>
+        <a class="btn-muted" href="{{ url_for('shift') }}">Отмена</a>
+      </div>
+    </form>
+  </section>
+{% endblock %}
